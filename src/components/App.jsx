@@ -1,30 +1,31 @@
-import React from 'react';
+import { useState } from 'react';
 import Section from './Section/Section';
 import FeedbackOptions from './FeedbackOptions/FeedbackOptions';
 import Statistics from './Statistics/Statistics';
 import Notification from './Notify/Notify';
 import { TbCoffeeOff } from 'react-icons/tb';
 
-export class App extends React.Component {
-  state = {
-    good: 0,
-    neutral: 0,
-    bad: 0,
-  };
+const INIT = {
+  good: 0,
+  neutral: 0,
+  bad: 0,
+};
 
-  feedbackCollector = e => {
-    this.setState(prevState => ({
+export const App = () => {
+  const [state, setState] = useState(INIT);
+
+  const feedbackCollector = e => {
+    setState(prevState => ({
+      ...prevState,
       [e.target.name]: prevState[e.target.name] + 1,
     }));
   };
 
-  countTotalFeedback = () =>
-    this.state.good + this.state.bad + this.state.neutral;
+  const countTotalFeedback = () => state.good + state.bad + state.neutral;
 
-  countPositiveFeedbackPercentage = () => {
+  const countPositiveFeedbackPercentage = () => {
     const result = (
-      (this.state.good /
-        (this.state.good + this.state.bad + this.state.neutral)) *
+      (state.good / (state.good + state.bad + state.neutral)) *
       100
     ).toFixed(1);
 
@@ -34,33 +35,32 @@ export class App extends React.Component {
       return result;
     }
   };
-  render() {
-    const { good, bad, neutral } = this.state;
-    const feed = this.countTotalFeedback();
-    return (
-      <>
-        <Section title="Please leave feedback">
-          <FeedbackOptions onLeaveFeedback={this.feedbackCollector} />
+
+  const { good, bad, neutral } = state;
+  const feed = countTotalFeedback();
+  return (
+    <>
+      <Section title="Please leave feedback">
+        <FeedbackOptions onLeaveFeedback={feedbackCollector} />
+      </Section>
+      {feed ? (
+        <Section title="Statistics">
+          <Statistics
+            good={good}
+            neutral={neutral}
+            bad={bad}
+            total={countTotalFeedback}
+            positivePercentage={countPositiveFeedbackPercentage}
+          />
         </Section>
-        {feed ? (
-          <Section title="Statistics">
-            <Statistics
-              good={good}
-              neutral={neutral}
-              bad={bad}
-              total={this.countTotalFeedback}
-              positivePercentage={this.countPositiveFeedbackPercentage}
-            />
-          </Section>
-        ) : (
-          <div>
-            <TbCoffeeOff
-              style={{ fill: 'brown', display: 'inline-', width: '50px' }}
-            />
-            <Notification message="There is no feedback" />
-          </div>
-        )}
-      </>
-    );
-  }
-}
+      ) : (
+        <div>
+          <TbCoffeeOff
+            style={{ fill: 'brown', display: 'inline-', width: '50px' }}
+          />
+          <Notification message="There is no feedback" />
+        </div>
+      )}
+    </>
+  );
+};

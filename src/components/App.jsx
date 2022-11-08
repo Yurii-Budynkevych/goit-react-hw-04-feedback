@@ -41,7 +41,7 @@ export const App = () => {
   return (
     <>
       <Section title="Please leave feedback">
-        <FeedbackOptions onLeaveFeedback={feedbackCollector} />
+        <FeedbackOptions options={state} onLeaveFeedback={feedbackCollector} />
       </Section>
       {feed ? (
         <Section title="Statistics">
